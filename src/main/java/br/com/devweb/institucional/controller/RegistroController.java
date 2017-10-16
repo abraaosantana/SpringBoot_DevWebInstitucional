@@ -32,14 +32,14 @@ public class RegistroController {
 
 	@GetMapping("/registro")
 	public ModelAndView registration(SegUsuario user) {
-		ModelAndView modelAndView = new ModelAndView("/conta/registro");
+		ModelAndView modelAndView = new ModelAndView("/account/register");
 		modelAndView.addObject("user", user);
 		return modelAndView;
 	}
 
 	@PostMapping("/registro")
 	public ModelAndView createNewUser(@Valid SegUsuario user, BindingResult bindingResult) {
-		ModelAndView modelAndView = new ModelAndView("/conta/registro");
+		ModelAndView modelAndView = new ModelAndView("/account/register");
 		
 		log.info("Iniciando controller /registro");
 		
@@ -47,7 +47,7 @@ public class RegistroController {
 		if (userExists != null) {
 			modelAndView.addObject("errorMessageEmail",
 					"Já existe um usuário cadastrado com esse email: " + user.getEmail());
-			modelAndView.setViewName("/conta/login");
+			modelAndView.setViewName("/account/login");
 			return modelAndView;
 		}
 
@@ -69,14 +69,14 @@ public class RegistroController {
 			
 			modelAndView.addObject("successMessage", user.getNome() + " cadastrado(a) com sucesso!");
 			
-			modelAndView.setViewName("/conta/login");
+			modelAndView.setViewName("/account/login");
 		}
 		return modelAndView;
 	}
 
 	@GetMapping("/reset")
 	public ModelAndView esqueceuSenha(SegUsuario user) {
-		ModelAndView modelAndView = new ModelAndView("/conta/reset");
+		ModelAndView modelAndView = new ModelAndView("/account/reset");
 		modelAndView.addObject("user", user);
 		return modelAndView;
 	}
@@ -96,7 +96,7 @@ public class RegistroController {
 			modelAndView.addObject("errorMessageEmail",
 					"Não existe nenhum usuário cadastrado com esse email! Realizar cadastro para " + user.getEmail());
 			modelAndView.addObject("user", user);
-			modelAndView.setViewName("/conta/registro");
+			modelAndView.setViewName("/account/register");
 			return modelAndView;
 		}else {
 			String novaSenha = "123456";
@@ -105,7 +105,7 @@ public class RegistroController {
 			notificacaoService.enviarNotificacao(userExists, novaSenha);
 			modelAndView.addObject("successMessage",
 					"Nova senha enviada para o e-mail: " + user.getEmail());
-			modelAndView.setViewName("/conta/login");
+			modelAndView.setViewName("/account/login");
 			return modelAndView;
 		}
 	}

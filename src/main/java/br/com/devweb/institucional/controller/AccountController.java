@@ -8,41 +8,42 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
 import br.com.devweb.institucional.model.SegUsuario;
 
-
 @Controller
-public class LoginController {
-	
-	private final Logger LOG = LoggerFactory.getLogger(LoginController.class);
-	
-	@RequestMapping(value={"/login"}, method = RequestMethod.GET)
-	public ModelAndView login(@AuthenticationPrincipal SegUsuario user){
-		
-		ModelAndView modelAndView = new ModelAndView("/conta/login");
-		
+public class AccountController {
+
+	private final Logger LOG = LoggerFactory.getLogger(AccountController.class);
+
+	@RequestMapping(value = { "/login" }, method = RequestMethod.GET)
+	public ModelAndView login(@AuthenticationPrincipal SegUsuario user) {
+
+		ModelAndView modelAndView = new ModelAndView("account/login");
+
 		if (user != null) {
 			LOG.info("Usuario " + user.getEmail() + " encontrado!");
-			modelAndView.setViewName("/admin/index");
+			modelAndView.setViewName("admin/index");
 			LOG.info("Renderizando view " + modelAndView.getViewName());
 			return modelAndView;
-			
+
 		} else {
-			
+
 			return modelAndView;
-			
+
 		}
-		
+
 	}
 	
-		
-	@GetMapping("/admin")
-	public ModelAndView admin(){
-		ModelAndView modelAndView = new ModelAndView();
-				modelAndView.setViewName("/admin/index");
-		LOG.info("Renderizando index");
+	@GetMapping("/403")
+    public String error403() {
+        return "/error/403";
+    }
+
+	@GetMapping("/profile")
+	public ModelAndView profile() {
+		ModelAndView modelAndView = new ModelAndView("/account/profile");
 		return modelAndView;
 	}
-
 
 }

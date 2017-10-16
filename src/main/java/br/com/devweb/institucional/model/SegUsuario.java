@@ -132,4 +132,76 @@ public class SegUsuario {
 		this.segRole = segRole;
 	}
 
+	@Override
+	public String toString() {
+		return "SegUsuario [id=" + id + ", nome=" + nome + ", ultimoNome=" + ultimoNome + ", cpf=" + cpf + ", email="
+				+ email + ", password=" + password + ", ativo=" + ativo + ", segRole=" + segRole + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (ativo ? 1231 : 1237);
+		result = prime * result + ((cpf == null) ? 0 : cpf.hashCode());
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((nome == null) ? 0 : nome.hashCode());
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
+		result = prime * result + ((segRole == null) ? 0 : segRole.hashCode());
+		result = prime * result + ((ultimoNome == null) ? 0 : ultimoNome.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SegUsuario other = (SegUsuario) obj;
+		if (ativo != other.ativo)
+			return false;
+		if (cpf == null) {
+			if (other.cpf != null)
+				return false;
+		} else if (!cpf.equals(other.cpf))
+			return false;
+		if (email == null) {
+			if (other.email != null)
+				return false;
+		} else if (!email.equals(other.email))
+			return false;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (nome == null) {
+			if (other.nome != null)
+				return false;
+		} else if (!nome.equals(other.nome))
+			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
+		if (segRole == null) {
+			if (other.segRole != null)
+				return false;
+		} else if (!segRole.equals(other.segRole))
+			return false;
+		if (ultimoNome == null) {
+			if (other.ultimoNome != null)
+				return false;
+		} else if (!ultimoNome.equals(other.ultimoNome))
+			return false;
+		return true;
+	}
+	
+	
+
 }
