@@ -65,6 +65,4 @@ public class SegRole {
 		return true;
 	}
 	
-	
-	
 }
