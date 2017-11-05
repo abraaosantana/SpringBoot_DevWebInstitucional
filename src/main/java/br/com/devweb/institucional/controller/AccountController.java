@@ -37,7 +37,7 @@ public class AccountController {
 
 		ModelAndView modelAndView = new ModelAndView("account/login");
 		LOG.info("Realizando login.");
-		modelAndView.addObject("errorMessage", "Se é o primeiro acesso, realize o cadasto!");
+		modelAndView.addObject("errorMessage", "Se é o primeiro acesso, realize o cadastro!");
 		return modelAndView;
 
 	}

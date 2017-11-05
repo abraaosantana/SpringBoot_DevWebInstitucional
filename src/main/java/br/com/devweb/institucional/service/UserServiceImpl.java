@@ -2,6 +2,7 @@ package br.com.devweb.institucional.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +43,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	public void saveUser(SegUsuario user) {
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		user.setAtivo(true);
+		user.setDataCriacao(new Date());
+		
 		SegRole userRole = roleRepository.findByRole("USER");
 		if(userRole != null) {
 			user.setRoles(new HashSet<SegRole>(Arrays.asList(userRole)));

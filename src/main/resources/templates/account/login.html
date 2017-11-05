@@ -24,11 +24,6 @@
 						<strong>O usuário ou senha não conferem!</strong>
 						<span th:utext="${errorMessage}"></span>
 					</div> 
-
-					<div class="alert-danger"
-						th:if="${#bools.isTrue(errorMessageEmail)}">
-						<strong th:utext="${errorMessageEmail}"></strong>
-					</div>
 					
 					<br>
 					

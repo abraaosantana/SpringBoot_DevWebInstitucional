@@ -30,9 +30,9 @@ public class NotificacaoService {
 		SimpleMailMessage email = new SimpleMailMessage();
 		
 		email.setTo(usuario.getEmail());
-		email.setFrom("libertopjc@hotmail.com");
-		email.setSubject("Teste de envio");
-		email.setText("Senha: "+ senha);
+		email.setFrom("deploys.app@gmail.com");
+		email.setSubject("DevWeb-Tecnologia - Cadastro");
+		email.setText("Sua Senha: "+ senha);
 		
 
 		LOG.info("Enviando e-mail!");

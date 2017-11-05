@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -23,33 +24,27 @@ import br.com.devweb.institucional.service.UserService;
 public class RegistroController {
 
 	private final Logger log = LoggerFactory.getLogger(RegistroController.class);
-	
+
 	@Autowired
 	private NotificacaoService notificacaoService;
-	
+
 	@Autowired
 	private UserService userService;
 
 	@GetMapping("/registro")
 	public ModelAndView registration(SegUsuario user) {
-		ModelAndView modelAndView = new ModelAndView("/account/register");
+		 ModelAndView modelAndView = new ModelAndView("/account/register");
+//		ModelAndView modelAndView = new ModelAndView("/conta2/registro");
 		modelAndView.addObject("user", user);
 		return modelAndView;
 	}
 
 	@PostMapping("/registro")
-	public ModelAndView createNewUser(@Valid SegUsuario user, BindingResult bindingResult) {
-		ModelAndView modelAndView = new ModelAndView("/account/register");
-		
+	public ModelAndView createNewUser(@Valid @ModelAttribute("user") SegUsuario user, BindingResult bindingResult) {
+		 ModelAndView modelAndView = new ModelAndView("/account/register");
+//		ModelAndView modelAndView = new ModelAndView("/conta2/registro");
+
 		log.info("Iniciando controller /registro");
-		
-		SegUsuario userExists = userService.findUserByEmail(user.getEmail());
-		if (userExists != null) {
-			modelAndView.addObject("errorMessageEmail",
-					"Já existe um usuário cadastrado com esse email: " + user.getEmail());
-			modelAndView.setViewName("/account/login");
-			return modelAndView;
-		}
 
 		if (bindingResult.hasErrors()) {
 			List<String> lista2 = new ArrayList<String>();
@@ -60,17 +55,24 @@ public class RegistroController {
 
 			modelAndView.addObject("errorMessage", lista2);
 			modelAndView.addObject("user", user);
-
 		} else {
-			String senhaInformada = user.getPassword();
-			
-			userService.saveUser(user);
-			notificacaoService.enviarNotificacao(user, senhaInformada);
-			
-			modelAndView.addObject("successMessage", user.getNome() + " cadastrado(a) com sucesso!");
-			
-			modelAndView.setViewName("/account/login");
+
+			SegUsuario userExists = userService.findUserByEmail(user.getEmail());
+			if (userExists != null) {
+				modelAndView.addObject("errorMessageEmail",	"Já existe um usuário cadastrado com esse email: " + user.getEmail());
+				modelAndView.setViewName("/account/register");
+				return modelAndView;
+			} else {
+
+				String senhaInformada = user.getPassword();
+				userService.saveUser(user);
+				notificacaoService.enviarNotificacao(user, senhaInformada);
+
+				modelAndView.addObject("successMessage", user.getNome() + " cadastrado(a) com sucesso!");
+				modelAndView.setViewName("/account/login");
+			}
 		}
+
 		return modelAndView;
 	}
 
@@ -81,34 +83,32 @@ public class RegistroController {
 		return modelAndView;
 	}
 
-
 	@PostMapping("/reset")
-	public ModelAndView resetSenha(@Valid SegUsuario user, BindingResult bindingResult) {
+	public ModelAndView resetSenha(@Valid @ModelAttribute("user") SegUsuario user, BindingResult bindingResult) {
 		ModelAndView modelAndView = new ModelAndView();
-		
-		/** Verifica usuário por email informado, caso não exista exibe mensagem de erro 
-		 *  e solicita registro.
-		 * */
+
+		/**
+		 * Verifica usuário por email informado, caso não exista exibe mensagem de erro
+		 * e solicita registro.
+		 */
 
 		SegUsuario userExists = userService.findUserByEmail(user.getEmail());
-		
+
 		if (userExists == null) {
 			modelAndView.addObject("errorMessageEmail",
 					"Não existe nenhum usuário cadastrado com esse email! Realizar cadastro para " + user.getEmail());
 			modelAndView.addObject("user", user);
-			modelAndView.setViewName("/account/register");
+			modelAndView.setViewName("/account/reset");
 			return modelAndView;
-		}else {
+		} else {
 			String novaSenha = "123456";
 			userExists.setPassword(novaSenha);
 			userService.saveUser(userExists);
 			notificacaoService.enviarNotificacao(userExists, novaSenha);
-			modelAndView.addObject("successMessage",
-					"Nova senha enviada para o e-mail: " + user.getEmail());
+			modelAndView.addObject("successMessage", "Nova senha enviada para o e-mail: " + user.getEmail());
 			modelAndView.setViewName("/account/login");
 			return modelAndView;
 		}
 	}
-		
-		
+
 }

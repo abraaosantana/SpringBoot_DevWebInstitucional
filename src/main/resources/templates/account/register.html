@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt" 
-    xmlns="http://www.w3.org/1999/xhtml"
+<html lang="pt" xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	xmlns:th="http://www.thymeleaf.org"
 	layout:decorate="~{account/layout/_account}">
@@ -10,38 +9,59 @@
 		<th:block layout:fragment="page-box">
 			<div class="register-box">
 				<div class="register-logo">
-					<a href="../../index2.html"><b>Admin</b>LTE</a>
+					<a href="/registro"><b>DevWeb </b>- Tecnologia</a>
 				</div>
 
 				<div class="register-box-body">
 					<p class="login-box-msg">Registre uma nova associação</p>
+					
+					<div class="alert-danger"
+						th:if="${#bools.isTrue(errorMessageEmail)}">
+						<strong th:utext="${errorMessageEmail}"></strong>
+					</div><br>
 
-					<form action="../../index.html" method="post">
+					<form th:object="${user}" th:action="@{/registro}" method="post">
 						<div class="form-group has-feedback">
-							<input type="text" class="form-control" placeholder="Full name">
+							<input type="text" class="form-control" th:field="*{nome}" placeholder="Nome" /> 
 							<span class="glyphicon glyphicon-user form-control-feedback"></span>
+							<label th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></label>
 						</div>
-						<div class="form-group has-feedback">
-							<input type="email" class="form-control" placeholder="Email">
+						
+						<div class="form-group has-feedback"> 
+							<input type="text"	class="form-control" th:field="*{ultimoNome}" placeholder="Sobrenome" />
 							<span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+							<label th:if="${#fields.hasErrors('ultimoNome')}" th:errors="*{ultimoNome}"></label>
 						</div>
+						
 						<div class="form-group has-feedback">
-							<input type="password" class="form-control"
-								placeholder="Password"> <span
-								class="glyphicon glyphicon-lock form-control-feedback"></span>
+							<input type="text" class="form-control" th:field="*{cpf}" placeholder="CPF - Apenas números" /> 
+							<span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+							<label th:if="${#fields.hasErrors('cpf')}" th:errors="*{cpf}"></label>
 						</div>
+						
 						<div class="form-group has-feedback">
-							<input type="password" class="form-control"
-								placeholder="Retype password"> <span
-								class="glyphicon glyphicon-log-in form-control-feedback"></span>
+							<input type="text" class="form-control" th:field="*{login}"	placeholder="nome.sobrenome" /> 
+							<span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+							<label th:if="${#fields.hasErrors('login')}" th:errors="*{login}"></label>
 						</div>
+						
+						<div class="form-group has-feedback">
+							<input type="text" class="form-control" th:field="*{email}" placeholder="E-mail" /> 
+							<span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+							<label th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></label>
+						</div>
+						
+						<div class="form-group has-feedback">
+							<input id="password" type="password" class="form-control" th:field="*{password}" placeholder="Senha" /> 
+							<span class="glyphicon glyphicon-lock form-control-feedback"></span>
+							<label th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></label> 
+						</div>
+
 						<div class="row">
-						    <div class="col-xs-1"></div>
+							<div class="col-xs-1"></div>
 							<div class="col-xs-6">
 								<div class="checkbox icheck">
-									<label> <input type="checkbox"> Estou de acordo com os
-										<a href="#">termos</a>
-									</label>
+									<label> <input type="checkbox"> Estou de acordo	com os <a href="#">termos</a></label>
 								</div>
 							</div>
 							<!-- /.col -->
@@ -55,8 +75,8 @@
 					<div class="social-auth-links text-center">
 						<p>- OU -</p>
 						<a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i
-							class="fa fa-facebook"></i> Inscreva-se usando Facebook</a> <a href="#"
-							class="btn btn-block btn-social btn-google btn-flat"><i
+							class="fa fa-facebook"></i> Inscreva-se usando Facebook</a> <a
+							href="#" class="btn btn-block btn-social btn-google btn-flat"><i
 							class="fa fa-google-plus"></i> Inscreva-se usando Google+</a>
 					</div>
 
@@ -68,4 +88,5 @@
 		</th:block>
 	</body>
 </th:block>
+
 </html>
