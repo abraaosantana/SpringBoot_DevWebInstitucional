@@ -1,12 +1,14 @@
 package br.com.devweb.institucional.model;
 
+import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,9 +18,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.Email;
@@ -27,23 +31,27 @@ import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.br.CPF;
 
 @Entity
-@Table(name = "seg_usuario")
+@Table(name = "seg_usuario", uniqueConstraints = { @UniqueConstraint(name = "UK_SEG_USUARIO_CPF", columnNames = "cpf"),
+		@UniqueConstraint(name = "UK_SEG_USUARIO_EMAIL", columnNames = "email") })
 @NamedQueries({ @NamedQuery(name = "SegUsuario.findAll", query = "SELECT u FROM SegUsuario u"),
 		@NamedQuery(name = "SegUsuario.findPorId", query = "SELECT u FROM SegUsuario u where u.id = :id"),
 		@NamedQuery(name = "SegUsuario.findPorLogin", query = "SELECT u FROM SegUsuario u where u.login = :login"),
 		@NamedQuery(name = "SegUsuario.findPorEmail", query = "SELECT u FROM SegUsuario u where u.email = :email"),
 		@NamedQuery(name = "SegUsuario.findPorToken", query = "SELECT u FROM SegUsuario u where u.token = :token"), })
-public class SegUsuario {
+public class SegUsuario implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@SequenceGenerator(name = "SEG_USUARIO_IDUSUARIO", sequenceName = "SEG_USUARIO_SEQ", initialValue = 1, allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEG_USUARIO_IDUSUARIO")
 	@Column(name = "id_usuario")
 	private Long id;
 
 	@Column(name = "ativo")
 	private boolean ativo;
 
-	@Column(name = "cpf", unique = true)
+	@Column(name = "cpf")
 	@CPF(message = "*Informe um CPF válido!")
 	private String cpf;
 
@@ -77,14 +85,23 @@ public class SegUsuario {
 	private String token;
 
 	@Column(name = "validade_token")
+	@Temporal(TemporalType.DATE)
 	private Date validadeToken;
 
+	// bi-directional many-to-many association to SegRole
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "seg_usuario_role", joinColumns = @JoinColumn(name = "id_usuario"), inverseJoinColumns = @JoinColumn(name = "id_role"))
-	private Set<SegRole> segRole;
-
+	@JoinTable(name = "seg_usuario_role", joinColumns = { @JoinColumn(name = "id_usuario") }
+	                                    , foreignKey = @ForeignKey(name = "FK_SEG_USUARIO")
+	                                    , inverseJoinColumns = { @JoinColumn(name = "id_role") }
+	                                    , inverseForeignKey = @ForeignKey(name = "FK_SEG_ROLE"))
+	private List<SegRole> segRoles;
+	
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "usuario_profile_id", foreignKey = @ForeignKey(name = "FK_SEG_USUARIO_PROFILE"))
 	private UsuarioProfile usuarioProfile;
+
+	public SegUsuario() {
+	}
 
 	public Long getId() {
 		return id;
@@ -158,12 +175,12 @@ public class SegUsuario {
 		this.ativo = ativo;
 	}
 
-	public Set<SegRole> getRole() {
-		return segRole;
+	public List<SegRole> getSegRoles() {
+		return this.segRoles;
 	}
 
-	public void setRoles(Set<SegRole> segRole) {
-		this.segRole = segRole;
+	public void setSegRoles(List<SegRole> segRoles) {
+		this.segRoles = segRoles;
 	}
 
 	public String getCpf() {
@@ -180,14 +197,6 @@ public class SegUsuario {
 
 	public void setDataCriacao(Date dataCriacao) {
 		this.dataCriacao = dataCriacao;
-	}
-
-	public Set<SegRole> getSegRole() {
-		return segRole;
-	}
-
-	public void setSegRole(Set<SegRole> segRole) {
-		this.segRole = segRole;
 	}
 
 	public UsuarioProfile getUsuarioProfile() {
@@ -248,8 +257,8 @@ public class SegUsuario {
 	public String toString() {
 		return "SegUsuario [id=" + id + ", ativo=" + ativo + ", cpf=" + cpf + ", dataCriacao=" + dataCriacao
 				+ ", email=" + email + ", login=" + login + ", nome=" + nome + ", ultimoNome=" + ultimoNome
-				+ ", password=" + password + ", token=" + token + ", validadeToken=" + validadeToken + ", segRole="
-				+ segRole + ", usuarioProfile=" + usuarioProfile + "]";
+				+ ", password=" + password + ", token=" + token + ", validadeToken=" + validadeToken + ", segRoles="
+				+ segRoles + ", usuarioProfile=" + usuarioProfile + "]";
 	}
 
 }

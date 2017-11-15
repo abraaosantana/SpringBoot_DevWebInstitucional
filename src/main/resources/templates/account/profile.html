@@ -3,6 +3,91 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	xmlns:th="http://www.thymeleaf.org"
 	layout:decorate="~{admin/layout/_dashboard-blank}">
+<head>
+
+	<!-- Adicionando JQuery -->
+    <script src="//code.jquery.com/jquery-3.2.1.min.js"></script>
+	
+    <!-- Adicionando Javascript -->
+    <script type="text/javascript" >
+
+        $(document).ready(function() {
+
+            function limpa_formulário_cep() {
+                // Limpa valores do formulário de cep.
+                $("#logradouro").val("");
+                $("#complemento").val("");
+                $("#bairro").val("");
+                $("#localidade").val("");
+                $("#uf").val("");
+                $("#unidade").val("");
+                $("#ibge").val("");
+                $("#gia").val("");
+                
+            }
+            
+            //Quando o campo cep perde o foco.
+            $("#cep").blur(function() {
+
+                //Nova variável "cep" somente com dígitos.
+                var cep = $(this).val().replace(/\D/g, '');
+
+                //Verifica se campo cep possui valor informado.
+                if (cep != "") {
+
+                    //Expressão regular para validar o CEP.
+                    var validacep = /^[0-9]{8}$/;
+
+                    //Valida o formato do CEP.
+                    if(validacep.test(cep)) {
+
+                        //Preenche os campos com "..." enquanto consulta webservice.
+		                $("#logradouro").val(" ... ");
+		                $("#complemento").val(" ... ");
+		                $("#bairro").val(" ... ");
+		                $("#localidade").val(" ... ");
+		                $("#uf").val(" ... ");
+		                $("#unidade").val(" ... ");
+		                $("#ibge").val(" ... ");
+		                $("#gia").val(" ... ");
+
+                        //Consulta o webservice viacep.com.br/
+                        $.getJSON("//viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
+
+                            if (!("erro" in dados)) {
+                                //Atualiza os campos com os valores da consulta.
+                                $("#logradouro").val(dados.logradouro);
+                                $("#complemento").val(dados.complemento);
+                                $("#bairro").val(dados.bairro);
+                                $("#localidade").val(dados.localidade);                               
+                                $("#uf").val(dados.uf);
+                                $("#unidade").val(dados.unidade);
+                                $("#ibge").val(dados.ibge);
+                                $("#gia").val(dados.gia);
+                            } //end if.
+                            else {
+                                //CEP pesquisado não foi encontrado.
+                                limpa_formulário_cep();
+                                alert("CEP não encontrado.");
+                            }
+                        });
+                    } //end if.
+                    else {
+                        //cep é inválido.
+                        limpa_formulário_cep();
+                        alert("Formato de CEP inválido.");
+                    }
+                } //end if.
+                else {
+                    //cep sem valor, limpa formulário.
+                    limpa_formulário_cep();
+                }
+            });
+        });
+
+    </script>
+    </head>
+
 
 <th:block layout:fragment="content-wrapper">
 
@@ -106,9 +191,9 @@
 								<form th:object="${segUsuario}" th:action="@{/profile}"
 									method="POST" class="form-horizontal">
 
-									<div class="alert-success">
+									<br><div class="alert-success">
 										<span th:utext="${successMessage}"></span>
-									</div>
+									</div><br>
 
 									<div th:if="${#bools.isTrue(errorMessage)}"
 										class=" alert alert-danger">
@@ -158,101 +243,124 @@
 												id="inputCpf" placeholder="C.P.F - Ex. 99988877766"
 												required="required">
 										</div>
-
-										<label for="inputCep" class="col-sm-2 control-label">CEP.</label>
-
-										<div class="col-sm-4">
-											<input type="text" th:field="*{usuarioProfile.cep}"
-												class="form-control" id="inputCep" placeholder="CEP"
-												required="required">
-										</div>
-									</div>
-
-									<div class="form-group">
-										<label for="inputEstado" class="col-sm-2 control-label">Estado</label>
-
+										
+									   <label for="inputProfissao" class="col-sm-2 control-label">Profissão</label>
 
 										<div class="col-sm-4">
-											<input type="text" th:field="*{usuarioProfile.estado}"
-												class="form-control" id="inputEstado" placeholder="Estado"
-												required="required">
-										</div>
-
-										<label for="inputCidade" class="col-sm-2 control-label">Cidade</label>
-
-										<div class="col-sm-4">
-											<input type="text" th:field="*{usuarioProfile.cidade}"
-												class="form-control" id="inputCidade" placeholder="Cidade"
-												required="required">
-										</div>
-									</div>
-
-									<div class="form-group">
-										<label for="inputEndereco" class="col-sm-2 control-label">Endereço</label>
-
-										<div class="col-sm-8">
-											<input type="text" th:field="*{usuarioProfile.endereco}"
-												class="form-control" id="inputEndereco"
-												placeholder="Endereço" required="required">
-										</div>
-
-										<div class="col-sm-2">
-											<input type="text" th:field="*{usuarioProfile.numero}"
-												class="form-control" id="inputNumero" placeholder="Número"
-												required="required">
-										</div>
-
-									</div>
-									<div class="form-group">
-										<label for="inputComplemento" class="col-sm-2 control-label">Complemento</label>
-
-										<div class="col-sm-10">
-											<input type="text" th:field="*{usuarioProfile.complemento}"
-												class="form-control" id="inputComplemento"
-												placeholder="Complemento ou Ponto de referência"
-												required="required">
-										</div>
-									</div>
-
-									<div class="form-group">
-										<label for="inputProfissao" class="col-sm-2 control-label">Profissão</label>
-
-										<div class="col-sm-10">
 											<input type="text" th:field="*{usuarioProfile.profissao}"
 												class="form-control" id="inputProfissao"
 												placeholder="Profissão" required="required">
 										</div>
+
+									</div>
+									
+									<div class="form-group">
+				
+									 <label for="cep" class="col-sm-2 control-label">CEP.</label>
+									
+										<div class="col-sm-4">
+											<input type="text" th:field="*{usuarioProfile.usuarioEndereco.cep}"
+												class="form-control" id="cep" placeholder="Apenas números! Ex: 66655000"
+												required="required" data-inputmask='"mask": "99999-999"' data-mask>
+											
+										</div>
+										<div class="col-sm-6">
+<!-- 											<button type="submit" class="btn btn-primary btn-sm"> -->
+<!-- 											<span class="glyphicon glyphicon-search" aria-hidden="true"></span></button> -->
+                                                <span>Digite o CEP e ao sair do campo o endereço será completado. Pode utilizar a tecla TAB após digitar o CEP.</span>
+
+										</div>
+									
 									</div>
 
 									<div class="form-group">
-										<label for="inputTelefoneFixo" class="col-sm-2 control-label">Telefone
-											Fixo</label>
+										<label for="uf" class="col-sm-2 control-label">UF</label>
+
+										<div class="col-sm-4">
+											<input type="text" th:field="*{usuarioProfile.usuarioEndereco.uf}"
+												class="form-control" id="uf" placeholder="UF" required="required">
+										</div>
+									
+										<label for="localidade" class="col-sm-2 control-label">Cidade</label>
+
+										<div class="col-sm-4">
+											<input type="text" th:field="*{usuarioProfile.usuarioEndereco.localidade}"
+												class="form-control" id="localidade" placeholder="Cidade" required="required">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="logradouro" class="col-sm-2 control-label">Logradouro</label>
+
+										<div class="col-sm-8">
+											<input type="text" th:field="*{usuarioProfile.usuarioEndereco.logradouro}"
+												class="form-control" id="logradouro"
+												placeholder="Logradouro" required="required">
+										</div>
+
+										<div class="col-sm-2">
+											<input type="text" th:field="*{usuarioProfile.usuarioEndereco.numero}"
+												class="form-control" id="inputNumero" placeholder="Número" required="required">
+										</div>
+
+									</div>
+									
+									<div class="form-group">
+										<label for="bairro" class="col-sm-2 control-label">Bairro</label>
 
 
 										<div class="col-sm-4">
-											<input type="text" th:field="*{usuarioProfile.telefoneFixo}"
-												class="form-control" id="inputTelefoneFixo"
-												placeholder="Telefone Fixo" required="required">
+											<input type="text" th:field="*{usuarioProfile.usuarioEndereco.bairro}"
+												class="form-control" id="bairro" placeholder="Bairro" required="required">
 										</div>
 
+
+										<label for="ibge" class="col-sm-2 control-label">Cod. Ibge</label>
+
+										<div class="col-sm-4">
+											<input type="text" th:field="*{usuarioProfile.usuarioEndereco.ibge}"
+												class="form-control" id="ibge" placeholder="Cod. IGBE" required="required">
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<label for="complemento" class="col-sm-2 control-label">Complemento</label>
+
+										<div class="col-sm-10">
+											<input type="text" th:field="*{usuarioProfile.usuarioEndereco.complemento}"
+												class="form-control" id="complemento"
+												placeholder="Complemento ou Ponto de referência" required="required">
+										</div>
+									</div>
+
+									<div class="form-group">
+	
 										<label for="inputCelular" class="col-sm-2 control-label">Celular</label>
 
 										<div class="col-sm-4">
 											<input type="text" th:field="*{usuarioProfile.celular}"
-												class="form-control" id="inputCelular" placeholder="Celular"
-												required="required">
+												class="form-control" id="inputCelular" placeholder="Celular" required="required">
 										</div>
+										
+										<label for="inputTelefoneFixo" class="col-sm-2 control-label">Telefone Fixo</label>
+
+										<div class="col-sm-4">
+											<input type="text" data-inputmask='"mask": "(99) 9999-9999"' data-mask th:field="*{usuarioProfile.telefoneFixo}"
+												class="form-control" id="inputTelefoneFixo"
+												placeholder="Telefone Fixo" >
+										</div>
+										
 									</div>
 
-									<div class="form-group">
-										<div class="col-sm-offset-2 col-sm-10">
-											<div class="checkbox">
-												<label> <input type="checkbox"> Concordo com
-													os <a href="#">termos e condições.</a>
-												</label>
-											</div>
-										</div>
-									</div>
+<!-- 									<div class="form-group"> -->
+<!-- 										<div class="col-sm-offset-2 col-sm-10"> -->
+<!-- 											<div class="checkbox"> -->
+<!-- 												<label> <input type="checkbox"> Concordo com -->
+<!-- 													os <a href="#">termos e condições.</a> -->
+<!-- 												</label> -->
+<!-- 											</div> -->
+<!-- 										</div> -->
+<!-- 									</div> -->
 									<div class="form-group">
 										<div class="col-sm-offset-2 col-sm-10">
 											<button type="submit" class="btn btn-danger">Salvar</button>
@@ -481,7 +589,9 @@
 
 		</section>
 		<!-- /.content -->
+		
 	</div>
 	<!-- /.content-wrapper -->
+	
 </th:block>
 </html>

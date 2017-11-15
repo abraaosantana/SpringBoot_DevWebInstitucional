@@ -1,7 +1,6 @@
 package br.com.devweb.institucional.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import br.com.devweb.institucional.model.SegRole;
 import br.com.devweb.institucional.model.SegUsuario;
+import br.com.devweb.institucional.model.UsuarioProfile;
+import br.com.devweb.institucional.repository.ProfileRepository;
 import br.com.devweb.institucional.repository.RoleRepository;
 import br.com.devweb.institucional.repository.UserRepository;
 
@@ -31,6 +32,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	private UserRepository userRepository;
 	@Autowired
 	private RoleRepository roleRepository;
+	@Autowired
+	private ProfileRepository profileRepository;
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -44,42 +47,54 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		user.setAtivo(true);
 		user.setDataCriacao(new Date());
-		
-		SegRole userRole = roleRepository.findByRole("USER");
-		if(userRole != null) {
-			user.setRoles(new HashSet<SegRole>(Arrays.asList(userRole)));
+
+		List<SegRole> userRole = roleRepository.findByRole("USER");
+		if (userRole != null) {
+			user.setSegRoles(userRole);
 			userRepository.save(user);
 		} else {
-			
-			//TODO: Persitir SegRole no primeiro deploy
+
+			// TODO: Persitir SegRole
 			SegRole role = new SegRole();
-			role.setId(new Long(1));
+			role.setIdRole(new Long(1));
 			role.setRole("ADMIN");
 			roleRepository.save(role);
-			role.setId(new Long(2));
+			role.setIdRole(new Long(2));
 			role.setRole("USER");
 			roleRepository.save(role);
-			
-			role = roleRepository.findByRole("USER");
-			user.setRoles(new HashSet<SegRole>(Arrays.asList(role)));
+
+			userRole = roleRepository.findByRole("USER");
+			user.setSegRoles(userRole);
 			userRepository.save(user);
-			
+
 		}
+	}
+	
+	@Override
+	public void updateUser(SegUsuario user) {
+
+		userRepository.saveAndFlush(user);	
+
+	}
+	
+	@Override
+	public void updateProfile(UsuarioProfile profile) {
+
+		profileRepository.saveAndFlush(profile);	
+
 	}
 
 	@Override
 	@Transactional
 	public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 		SegUsuario user = userRepository.findByEmail(userName);
-		List<GrantedAuthority> authorities = getUserAuthority(user.getRole());	
-		
+		List<GrantedAuthority> authorities = getUserAuthority(user.getSegRoles());
+
 		return buildUserForAuthentication(user, authorities);
-		
+
 	}
- 
 
-
-	private List<GrantedAuthority> getUserAuthority(Set<SegRole> userRole) {
+	private List<GrantedAuthority> getUserAuthority(List<SegRole> userRole) {
 		Set<GrantedAuthority> roles = new HashSet<GrantedAuthority>();
 		for (SegRole segRole : userRole) {
 			roles.add(new SimpleGrantedAuthority(segRole.getRole()));
@@ -90,9 +105,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	private UserDetails buildUserForAuthentication(SegUsuario user, List<GrantedAuthority> authorities) {
-		
-		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.isAtivo(), true, true, true, authorities);
+
+		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
+				user.isAtivo(), true, true, true, authorities);
 	}
-	
 
 }

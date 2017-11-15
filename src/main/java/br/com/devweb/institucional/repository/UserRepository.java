@@ -7,5 +7,7 @@ import br.com.devweb.institucional.model.SegUsuario;
 
 @Repository("userRepository")
 public interface UserRepository extends JpaRepository<SegUsuario, Long> {
+	
 	SegUsuario findByEmail(String email);
+	
 }

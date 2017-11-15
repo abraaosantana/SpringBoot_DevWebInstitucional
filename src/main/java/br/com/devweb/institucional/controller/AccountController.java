@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.com.devweb.institucional.model.SegUsuario;
-import br.com.devweb.institucional.model.UsuarioProfile;
 import br.com.devweb.institucional.service.UserServiceImpl;
 
 @Controller
@@ -48,13 +47,13 @@ public class AccountController {
 	}
 
 	@GetMapping("/profile")
-	public ModelAndView profile(SegUsuario user, UsuarioProfile usuarioProfile) {
+	public ModelAndView profile(SegUsuario user) {
 		ModelAndView modelAndView = new ModelAndView("/account/profile");
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		user = userService.findUserByEmail(auth.getName());
 		modelAndView.addObject("segUsuario", user);
-
+			
 		return modelAndView;
 	}
 
@@ -65,17 +64,53 @@ public class AccountController {
 		LOG.info("Iniciando cadastro perfil de usuario");
 
 		SegUsuario userExists = userService.findUserByEmail(user.getEmail());
-		if (userExists != null) {
+		
+		/**
+		 * Somente teste para consumir ws de endereco pelo java
+		 * Consumindo ws e Peenchendo formulario com javascript
+		 */
 
-			userExists.setUsuarioProfile(user.getUsuarioProfile());
-			userService.saveUser(userExists);
-
-			modelAndView.addObject("successMessage", user.getNome() + " cadastro atualizado com sucesso!");
-
+		/*
+		String formCep = user.getUsuarioProfile().getCep();
+	    if (!formCep.equals(null) && !(formCep.contains("-"))) {
+			UsuarioEndereco endereco = ClienteWsViaCep.getEnderecoPorCep(formCep);
+		    user.getUsuarioProfile().setCep(endereco.getCep());
+		    user.getUsuarioProfile().setBairro(endereco.getBairro());
+		    user.getUsuarioProfile().setLocalidade(endereco.getLocalidade());
+		    user.getUsuarioProfile().setComplemento(endereco.getComplemento());
+		    user.getUsuarioProfile().setLogradouro(endereco.getLogradouro());
+		    user.getUsuarioProfile().setUf(endereco.getUf());
+		    user.getUsuarioProfile().setIbge(endereco.getIbge());
+		    
+			modelAndView.addObject("successMessage", "* Cep: " + formCep + " encontrado!Formulario preenchido com sucesso! ");
 			modelAndView.setViewName("/account/profile");
 			return modelAndView;
+	    } */
+		
+		if (userExists != null) {
+			if (userExists.getUsuarioProfile() != null) {
+				
+				user.getUsuarioProfile().setId(userExists.getUsuarioProfile().getId());
+				user.getUsuarioProfile().getUsuarioEndereco().setId(userExists.getUsuarioProfile().getUsuarioEndereco().getId());
+				
+				userService.updateProfile(user.getUsuarioProfile());
+				
+				modelAndView.addObject("successMessage", "*  " + user.getNome() + " seu cadastro foi atualizado com sucesso! ");
+				modelAndView.setViewName("/account/profile");
+				
+				return modelAndView;
+						    
+		    } else {
+		    	
+		    	userExists.setUsuarioProfile(user.getUsuarioProfile());
+				userService.updateUser(userExists);
+				modelAndView.addObject("successMessage", "*  " + user.getNome() + " seu cadastro foi atualizado com sucesso! ");
+				modelAndView.setViewName("/account/profile");
+				return modelAndView;
+			
+		    }
 		}
-
+		
 		if (bindingResult.hasErrors()) {
 			List<String> lista2 = new ArrayList<String>();
 			for (FieldError lista : bindingResult.getFieldErrors()) {

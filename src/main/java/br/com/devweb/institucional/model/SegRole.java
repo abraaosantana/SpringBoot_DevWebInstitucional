@@ -1,48 +1,66 @@
 package br.com.devweb.institucional.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.io.Serializable;
+import javax.persistence.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "seg_role")
-public class SegRole {
-	
+@NamedQuery(name = "SegRole.findAll", query = "SELECT s FROM SegRole s")
+public class SegRole implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@SequenceGenerator(name = "SEG_ROLE_IDROLE", sequenceName = "SEG_ROLE_SEQ", initialValue = 1, allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEG_ROLE_IDROLE")
 	@Column(name = "id_role")
-	private Long id;
-	
-	@Column(name="role")
+	private Long idRole;
+
 	private String role;
-	
-	public Long getId() {
-		return id;
+
+	// bi-directional many-to-many association to SegUsuario
+	@ManyToMany(mappedBy = "segRoles")
+	private List<SegUsuario> segUsuarios;
+
+	public SegRole() {
 	}
-	public void setId(Long id) {
-		this.id = id;
+
+	public Long getIdRole() {
+		return this.idRole;
 	}
+
+	public void setIdRole(Long idRole) {
+		this.idRole = idRole;
+	}
+
 	public String getRole() {
-		return role;
+		return this.role;
 	}
+
 	public void setRole(String role) {
 		this.role = role;
 	}
-	@Override
-	public String toString() {
-		return "SegRole [id=" + id + ", role=" + role + "]";
+
+	public List<SegUsuario> getSegUsuarios() {
+		return this.segUsuarios;
 	}
+
+	public void setSegUsuarios(List<SegUsuario> segUsuarios) {
+		this.segUsuarios = segUsuarios;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + ((idRole == null) ? 0 : idRole.hashCode());
 		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		result = prime * result + ((segUsuarios == null) ? 0 : segUsuarios.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -52,17 +70,27 @@ public class SegRole {
 		if (getClass() != obj.getClass())
 			return false;
 		SegRole other = (SegRole) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (idRole == null) {
+			if (other.idRole != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!idRole.equals(other.idRole))
 			return false;
 		if (role == null) {
 			if (other.role != null)
 				return false;
 		} else if (!role.equals(other.role))
 			return false;
+		if (segUsuarios == null) {
+			if (other.segUsuarios != null)
+				return false;
+		} else if (!segUsuarios.equals(other.segUsuarios))
+			return false;
 		return true;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "SegRole [idRole=" + idRole + ", role=" + role + ", segUsuarios=" + segUsuarios + "]";
+	}
+
 }

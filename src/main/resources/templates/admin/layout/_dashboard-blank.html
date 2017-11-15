@@ -715,8 +715,11 @@
 		$.widget.bridge('uibutton', $.ui.button);
 	</script>
 	<!-- Bootstrap 3.3.7 -->
-	<script
-		th:src="@{admin/bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+	<script	th:src="@{admin/bower_components/bootstrap/dist/js/bootstrap.min.js}"></script>
+	<!-- InputMask -->
+	<script th:src="@{admin/plugins/input-mask/jquery.inputmask.js}"></script>
+	<script th:src="@{admin/plugins/input-mask/jquery.inputmask.date.extensions.js}"></script>
+	<script th:src="@{admin/plugins/input-mask/jquery.inputmask.extensions.js}"></script>	
 	<!-- Morris.js charts -->
 	<script th:src="@{admin/bower_components/raphael/raphael.min.js}"></script>
 	<script th:src="@{admin/bower_components/morris.js/morris.min.js}"></script>
@@ -756,5 +759,6 @@
 	<script th:src="@{admin/dist/js/pages/dashboard2.js}"></script>
 	<!-- AdminLTE for demo purposes -->
 	<script th:src="@{admin/dist/js/demo.js}"></script>
+
 </body>
 </html>

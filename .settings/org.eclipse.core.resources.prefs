@@ -1,5 +1,10 @@
 eclipse.preferences.version=1
 encoding//src/main/java=UTF-8
+encoding//src/main/java/br/com/devweb/institucional/ws/model/CorreiosEndereco.java=UTF-8
+encoding//src/main/java/br/com/devweb/institucional/ws/model/PostmonCidadeInfo.java=UTF-8
+encoding//src/main/java/br/com/devweb/institucional/ws/model/PostmonEndereco.java=UTF-8
+encoding//src/main/java/br/com/devweb/institucional/ws/model/PostmonEstadoInfo.java=UTF-8
+encoding//src/main/java/br/com/devweb/institucional/ws/model/ViaCepEndereco.java=UTF-8
 encoding//src/main/resources=UTF-8
 encoding//src/test/java=UTF-8
 encoding/<project>=UTF-8
