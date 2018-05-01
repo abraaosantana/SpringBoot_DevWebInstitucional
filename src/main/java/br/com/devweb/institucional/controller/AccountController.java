@@ -48,7 +48,7 @@ public class AccountController {
 
 	@GetMapping("/profile")
 	public ModelAndView profile(SegUsuario user) {
-		ModelAndView modelAndView = new ModelAndView("/account/profile");
+		ModelAndView modelAndView = new ModelAndView("account/profile");
 
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		user = userService.findUserByEmail(auth.getName());
@@ -59,7 +59,7 @@ public class AccountController {
 
 	@PostMapping("/profile")
 	public ModelAndView createNewUser(@Valid SegUsuario user, BindingResult bindingResult) {
-		ModelAndView modelAndView = new ModelAndView("/account/profile");
+		ModelAndView modelAndView = new ModelAndView("account/profile");
 
 		LOG.info("Iniciando cadastro perfil de usuario");
 
@@ -96,7 +96,7 @@ public class AccountController {
 				userService.updateProfile(user.getUsuarioProfile());
 				
 				modelAndView.addObject("successMessage", "*  " + user.getNome() + " seu cadastro foi atualizado com sucesso! ");
-				modelAndView.setViewName("/account/profile");
+				modelAndView.setViewName("account/profile");
 				
 				return modelAndView;
 						    
@@ -105,7 +105,7 @@ public class AccountController {
 		    	userExists.setUsuarioProfile(user.getUsuarioProfile());
 				userService.updateUser(userExists);
 				modelAndView.addObject("successMessage", "*  " + user.getNome() + " seu cadastro foi atualizado com sucesso! ");
-				modelAndView.setViewName("/account/profile");
+				modelAndView.setViewName("account/profile");
 				return modelAndView;
 			
 		    }

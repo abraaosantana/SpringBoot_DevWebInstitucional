@@ -1,7 +1,6 @@
 package br.com.devweb.institucional.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -59,13 +58,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) throws Exception {
 	    web
 	       .ignoring()
-	       .antMatchers("/admin/**", "/css/**", "/fonts/**", "/img/**", "/js/**", "/less/**");
+	       .antMatchers("/admin/**", "/css/**", "/fonts/**", "/img/**", "/js/**", "/less/**", 
+	    		        "**/admin/**", "**/css/**", "**/fonts/**", "**/img/**", "**/js/**", "**/less/**");
 	}
 	
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-		return bCryptPasswordEncoder;
-	}
 
 }
